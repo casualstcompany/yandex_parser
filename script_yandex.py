@@ -64,11 +64,6 @@ def get_whatsapp_numbers(search_text, city):
     # driver.get("https://uslugi.yandex.ru/")  # Открываем Google для примера
     driver.get("https://uslugi.yandex.ru/213-moscow/category/raznoe/")  # Открываем Google для примера
 
-    # click_search_box = WebDriverWait(driver, 7).until(
-    #     EC.presence_of_element_located((By.CSS_SELECTOR, ".RubricSuggest-HandlerHeader"))
-    # )
-    # click_search_box.click()
-
     time.sleep(2)
 
     # Находим поле ввода и вводим запрос
@@ -137,16 +132,22 @@ def get_whatsapp_numbers(search_text, city):
             specialist_containers = WebDriverWait(driver, 20).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".WorkerCard"))
             )
+            # dict_specialist = {}
 
             for container in specialist_containers:
+
                 # Попытка найти элементы, которые могут прервать выполнение цикла
-                error = container.find_elements(By.CSS_SELECTOR, ".WorkerCard-AdvText")
-                error1 = container.find_elements(By.CSS_SELECTOR,
+                error = driver.find_elements(By.CSS_SELECTOR, ".WorkerCard-AdvText")
+                error1 = driver.find_elements(By.CSS_SELECTOR,
                                                  ".Form.OrderForm2.WorkersListBlendered-OrderFormCard.Gap.Gap_bottom_l")
 
                 # Проверка наличия элементов, которые могут прервать выполнение цикла
-                if error or error1:
+                if error:
                     continue
+
+                if error1:
+                    continue
+
 
                 # chat_button = container.find_element(By.CSS_SELECTOR, ".WorkerControls-MessengersPopup")
                 buttons = container.find_elements(By.CSS_SELECTOR, ".Button2_pin_circle")
@@ -156,7 +157,7 @@ def get_whatsapp_numbers(search_text, city):
                     for button in buttons:
                         if "Чат" in button.text:
                             scroll_to_element(driver, button)
-                            time.sleep(2)
+                            time.sleep(3)
                             button.click()
                             time.sleep(3)
                             try:
@@ -169,48 +170,24 @@ def get_whatsapp_numbers(search_text, city):
                                         file.write(f"+{phone_number}\n")
                                         file.flush()  # Сбросить буфер, чтобы запись была доступна сразу
                                         print(f"Номер телефона {phone_number} добавлен в файл")
+
                                         # click_to_center(driver)
                             except:
-                                click_to_center(driver)
+                                # click_to_center(driver)
                                 print('except 0 no links')
 
-                            # try:
-                            #     close_button = driver.find_element(By.CSS_SELECTOR,
-                            #                                        ".ui-icon-button.ui-icon-button_hoverable.yamb-cell")
-                            #     close_button.click()
-                            #     print("Окно успешно закрыто")
-                            #     time.sleep(2)
-                            # except:
-                            #     print("Окно не найдено")
-                            #     print('except 1')
                             time.sleep(2)
+                driver.execute_script("arguments[0].remove()", container)
 
             if not click_next_button(driver):
-                time.sleep(7)
+                time.sleep(5)
                 break
         except:
             print('main block error')
 
-            # try:
-            #     close_button = driver.find_element(By.CSS_SELECTOR,
-            #                                        ".YdoModal-CloseButton_position_normal")
-            #     close_button.click()
-            # except:
-            #     pass
-
-    # specialist_containers.remove(container)
-    # driver.get(driver.current_url)
-    # time.sleep(10)
-    # if not click_next_button(driver):
-    #     break
-    # else:
-    #     break
-    # if not click_next_button(driver):
-    #     break
-    # time.sleep(10)
 
 
 # Пример использования функции
-city = "Сочи"
+city = "Новосибирск"
 search_text = "Психологи"
 whatsapp_numbers = get_whatsapp_numbers(search_text, city)
